@@ -206,8 +206,8 @@ namespace POlidvyAPI.Controller
 
             var endyear = year + duration;
 
-            string endDate = endyear.ToString()+"/" + month.ToString()+"/" + day.ToString(); 
-
+            var endDate = endyear + "/" + month + "/" + day;
+           
             Console.WriteLine("----------------------------------------------");
             Console.WriteLine($"{year} +{duration}");
             Console.WriteLine($"{endyear}/{month}/{day}");
@@ -216,5 +216,7 @@ namespace POlidvyAPI.Controller
 
             return endDate;
         }
+
+       
     }
 }
