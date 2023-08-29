@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using POlidvyAPI.Model;
 using POlidvyAPI.Model.ViewModel;
@@ -17,21 +10,22 @@ namespace POlidvyAPI.Controller
     public class PolicyController : ControllerBase
     {
         private readonly PolicyDBContext _context;
-   
+        private object myList;
+
         public PolicyController(PolicyDBContext context)
         {
-            _context = context;   
+            _context = context;
         }
 
         // GET: api/Policy
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PolicyTbl>>> GetPolicyTbls()
         {
-          if (_context.PolicyTbls == null)
-          {
-              return NotFound();
-          }
-            var policyList = await _context.PolicyTbls.Include(x=>x.PolicyType).Include(y=>y.UserType).ToListAsync();
+            if (_context.PolicyTbls == null)
+            {
+                return NotFound();
+            }
+            var policyList = await _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).ToListAsync();
 
             return Ok(policyList);
         }
@@ -40,10 +34,10 @@ namespace POlidvyAPI.Controller
         [HttpGet("{id}")]
         public async Task<ActionResult<PolicyTbl>> GetPolicyTbl(int id)
         {
-          if (_context.PolicyTbls == null)
-          {
-              return NotFound();
-          }
+            if (_context.PolicyTbls == null)
+            {
+                return NotFound();
+            }
             var policyTbl = await _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).FirstOrDefaultAsync(z => z.PolicyId == id);
 
             if (policyTbl == null)
@@ -52,6 +46,40 @@ namespace POlidvyAPI.Controller
             }
 
             return policyTbl;
+        }
+        /*
+                [HttpGet("Search")]
+
+                public async Task<IActionResult> SearchPolicy([FromQuery] SearchViewModel searchViewModel)
+                {
+                    //PolicyTbl searchList2 = new PolicyTbl();
+
+                    try
+                    {
+                        var searchlist = await _context.PolicyTbls.Include(y=>y.PolicyType)
+                        .Where(
+                             x => x.PolicyName.ToLower().Contains(searchViewModel.PolicyName.ToLower())
+                          || x.PolicyId.ToString().Equals(searchViewModel.PolicyId.ToString())
+                          || x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())
+                          || x.PolicyDuration.ToString().Equals(searchViewModel.PolicyDuration.ToString())
+                          || x.PolicyType.PolicyTypeName.ToLower().Contains(searchViewModel.PolicyTypeName.ToLower())
+                             ).ToListAsync();
+                        return Ok(searchlist);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex.ToString());
+                    }
+                }*/
+
+        [HttpGet("Search")]
+
+        public async Task<IActionResult> SearchPolicy(string name)
+        {
+
+            var list = await _context.PolicyTbls.Include(x => x.PolicyType)
+                .Where(x => x.PolicyType.PolicyTypeName.ToLower().Contains(name.ToLower())).ToListAsync();
+            return Ok(list);
         }
 
         // PUT: api/Policy/5
@@ -81,7 +109,6 @@ namespace POlidvyAPI.Controller
                     throw;
                 }
             }
-
             return NoContent();
         }
 
@@ -94,7 +121,6 @@ namespace POlidvyAPI.Controller
 
             if (ModelState.IsValid)
             {
-               
                 poilicy.PolicyId = policyTbl.PolicyId;
                 poilicy.PolicyName = policyTbl.PolicyName;
                 poilicy.PolicyDuration = policyTbl.PolicyDuration;
@@ -112,6 +138,7 @@ namespace POlidvyAPI.Controller
 
                 await _context.SaveChangesAsync();
 
+                /*To get Policy Type Code*/
                 string typeCode = await getPolicyTypeShortCode(poilicy.PolicyTypeId);
                 int yearCode = poilicy.PolicyStartDate.Year;
                 string idCode = poilicy.PolicyId.ToString("D4");
@@ -124,7 +151,9 @@ namespace POlidvyAPI.Controller
 
                 await _context.SaveChangesAsync();
 
-                var maturityAmount = await BuildMaturityAmount(policyTbl);
+                /*To get Maturity Amount*/
+
+                var maturityAmount = await getMaturityAmount(policyTbl);
 
                 // await _context.SaveChangesAsync();
 
@@ -135,9 +164,8 @@ namespace POlidvyAPI.Controller
                 //Console.WriteLine(policyTbl.MaturityAmount);
                 //_context.PolicyTbls.Update(PolicyTbl);
 
-                var endDate = await BuildEndDate(policyTbl);
-
-
+                /*To get End Date of policy*/
+                var endDate = await getEndDate(policyTbl);
                 Console.WriteLine("--------------------End Date--------------------------");
                 Console.WriteLine(endDate);
                 Console.WriteLine("----------------------------------------------");
@@ -145,9 +173,13 @@ namespace POlidvyAPI.Controller
                 Console.WriteLine("-------------------Policy Code---------------------------");
                 Console.WriteLine(PolicyCode);
                 Console.WriteLine("----------------------------------------------");
-                
-            }
 
+                string typeName = await getPolicyTypeName(poilicy.PolicyTypeId);
+
+                Console.WriteLine("-------------------------------------------");
+                Console.WriteLine(typeName);
+                Console.WriteLine("-------------------------------------------");
+            }
             return Ok(poilicy);
         }
 
@@ -171,6 +203,7 @@ namespace POlidvyAPI.Controller
             return NoContent();
         }
 
+
         private bool PolicyTblExists(int id)
         {
             return (_context.PolicyTbls?.Any(e => e.PolicyId == id)).GetValueOrDefault();
@@ -178,45 +211,56 @@ namespace POlidvyAPI.Controller
 
         private async Task<string> getPolicyTypeShortCode(int typeId)
         {
-             var PolicyType = await _context.PolicyTypeTbls.FirstOrDefaultAsync(e => e.PolicyTypeId == typeId);
+            var PolicyType = await _context.PolicyTypeTbls.FirstOrDefaultAsync(e => e.PolicyTypeId == typeId);
 
             return PolicyType.PolicyTypeCode;
         }
-        private async Task<double> BuildMaturityAmount(PolicyViewModel policyViewModel)
-        { 
+
+        private async Task<string> getPolicyTypeName(int typeid)
+        {
+            var name = await _context.PolicyTypeTbls.FirstOrDefaultAsync(z => z.PolicyTypeId == typeid);
+
+            return name == null ? string.Empty : name.PolicyTypeName;
+        }
+
+        private async Task<double> getMaturityAmount(PolicyViewModel policyViewModel)
+        {
             var MaturityAmount = (Convert.ToDouble(policyViewModel.PolicyInitialDeposit))
                 + (Convert.ToDouble(policyViewModel.PolicyDuration) * Convert.ToDouble(policyViewModel.PolicyTermsPerYear) * Convert.ToDouble(policyViewModel.PolicyAmount))
                 + ((Convert.ToDouble(policyViewModel.PolicyDuration) * Convert.ToDouble(policyViewModel.PolicyTermsPerYear) * Convert.ToDouble(policyViewModel.PolicyAmount))
                 * (Convert.ToDouble(policyViewModel.PolicyInterest) / 100));
 
 
-            Console.WriteLine("-------------------------------------------"); 
+            Console.WriteLine("-------------------------------------------");
             Console.WriteLine($"({policyViewModel.PolicyInitialDeposit}) +  ({policyViewModel.PolicyDuration} * {policyViewModel.PolicyTermsPerYear} * {policyViewModel.PolicyAmount})  + (({policyViewModel.PolicyDuration} * {policyViewModel.PolicyTermsPerYear} * {policyViewModel.PolicyAmount}) * ({policyViewModel.PolicyInterest} /100))");
             Console.WriteLine("-------------------------------------------");
 
-            return MaturityAmount;   
+            return MaturityAmount;
         }
 
-        private async Task<string> BuildEndDate(PolicyViewModel policyViewModel)
+        private async Task<DateTime> getEndDate(PolicyViewModel policyViewModel)
         {
-            var year = policyViewModel.PolicyStartDate.Year;
+            /*var year = policyViewModel.PolicyStartDate.Year;
             var month = policyViewModel.PolicyStartDate.Month;
-            var day = policyViewModel.PolicyStartDate.Day;
+            var day = policyViewModel.PolicyStartDate.Day;*/
             var duration = policyViewModel.PolicyDuration;
 
-            var endyear = year + duration;
+            var startDate = DateTime.Now;
+            //var startDate = policyViewModel.PolicyStartDate;
 
-            var endDate = endyear + "/" + month + "/" + day;
-           
+            var endDate = startDate.AddYears(duration);
+
+            /*  var endyear = year + duration;
+
+              var sendDate = endyear + "/" + month + "/" + day;*/
+
             Console.WriteLine("----------------------------------------------");
-            Console.WriteLine($"{year} +{duration}");
-            Console.WriteLine($"{endyear}/{month}/{day}");
+            /* Console.WriteLine($"{year} +{duration}");
+             Console.WriteLine($"{endyear}/{month}/{day}");*/
             Console.WriteLine(endDate);
             Console.WriteLine("----------------------------------------------");
 
             return endDate;
         }
-
-       
     }
 }
