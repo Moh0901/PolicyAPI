@@ -11,7 +11,6 @@ namespace POlidvyAPI.Controller
     public class PolicyController : ControllerBase
     {
         private readonly PolicyDBContext _context;
-        private object myList;
 
         public PolicyController(PolicyDBContext context)
         {
@@ -31,23 +30,23 @@ namespace POlidvyAPI.Controller
             return Ok(policyList);
         }
 
-        // GET: api/Policy/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PolicyTbl>> GetPolicyTbl(int id)
-        {
-            if (_context.PolicyTbls == null)
-            {
-                return NotFound();
-            }
-            var policyTbl = await _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).FirstOrDefaultAsync(z => z.PolicyId == id);
+        /*        // GET: api/Policy/5
+                [HttpGet("{id}")]
+                public async Task<ActionResult<PolicyTbl>> GetPolicyTbl(int id)
+                {
+                    if (_context.PolicyTbls == null)
+                    {
+                        return NotFound();
+                    }
+                    var policyTbl = await _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).FirstOrDefaultAsync(z => z.PolicyId == id);
 
-            if (policyTbl == null)
-            {
-                return NotFound();
-            }
+                    if (policyTbl == null)
+                    {
+                        return NotFound();
+                    }
 
-            return policyTbl;
-        }
+                    return policyTbl;
+                }*/
 
         [HttpGet("Search")]
 
@@ -55,17 +54,17 @@ namespace POlidvyAPI.Controller
         {
             //PolicyTbl searchList2 = new PolicyTbl();
             List<PolicyTbl> myListSearch = new List<PolicyTbl>();
-            
+
             if (!string.IsNullOrWhiteSpace(searchViewModel.PolicyName))
             {
-                myListSearch = await _context.PolicyTbls.Include(y=>y.PolicyType).Where(x => x.PolicyName.ToLower().Contains(searchViewModel.PolicyName.ToLower())).ToListAsync();  
+                myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyName.ToLower().Contains(searchViewModel.PolicyName.ToLower())).ToListAsync();
             }
 
-            if(searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Any())
+            if (searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Any())
             {
-                myListSearch = myListSearch.Where(x=>x.PolicyId == searchViewModel.PolicyId).ToList();
+                myListSearch = myListSearch.Where(x => x.PolicyId == searchViewModel.PolicyId).ToList();
             }
-            else if(searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Count() == 0)
+            else if (searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Count() == 0)
             {
                 myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyId == searchViewModel.PolicyId).ToListAsync();
             }
@@ -79,11 +78,11 @@ namespace POlidvyAPI.Controller
                 myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyDuration == searchViewModel.PolicyDuration).ToListAsync();
             }
 
-            if(!string.IsNullOrWhiteSpace(searchViewModel.PolicyCompany) && myListSearch.Any())
+            if (!string.IsNullOrWhiteSpace(searchViewModel.PolicyCompany) && myListSearch.Any())
             {
                 myListSearch = myListSearch.Where(x => x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())).ToList();
             }
-            else if(searchViewModel.PolicyCompany != null && myListSearch.Count() == 0)
+            else if (searchViewModel.PolicyCompany != null && myListSearch.Count() == 0)
             {
                 myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())).ToListAsync();
             }
@@ -105,9 +104,9 @@ namespace POlidvyAPI.Controller
                 {
                     return BadRequest(ex.ToString());
                 }
-             }   
+            }
 
-               
+
             var list = myListSearch;
             return Ok(list);
 
