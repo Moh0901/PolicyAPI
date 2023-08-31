@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using POlidvyAPI.Model;
 using POlidvyAPI.Model.ViewModel;
+using System.Collections.Immutable;
 
 namespace POlidvyAPI.Controller
 {
@@ -47,39 +48,69 @@ namespace POlidvyAPI.Controller
 
             return policyTbl;
         }
-        /*
-                [HttpGet("Search")]
-
-                public async Task<IActionResult> SearchPolicy([FromQuery] SearchViewModel searchViewModel)
-                {
-                    //PolicyTbl searchList2 = new PolicyTbl();
-
-                    try
-                    {
-                        var searchlist = await _context.PolicyTbls.Include(y=>y.PolicyType)
-                        .Where(
-                             x => x.PolicyName.ToLower().Contains(searchViewModel.PolicyName.ToLower())
-                          || x.PolicyId.ToString().Equals(searchViewModel.PolicyId.ToString())
-                          || x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())
-                          || x.PolicyDuration.ToString().Equals(searchViewModel.PolicyDuration.ToString())
-                          || x.PolicyType.PolicyTypeName.ToLower().Contains(searchViewModel.PolicyTypeName.ToLower())
-                             ).ToListAsync();
-                        return Ok(searchlist);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(ex.ToString());
-                    }
-                }*/
 
         [HttpGet("Search")]
 
-        public async Task<IActionResult> SearchPolicy(string name)
+        public async Task<IActionResult> SearchPolicy([FromQuery] SearchViewModel searchViewModel)
         {
+            //PolicyTbl searchList2 = new PolicyTbl();
+            List<PolicyTbl> myListSearch = new List<PolicyTbl>();
+            
+            if (!string.IsNullOrWhiteSpace(searchViewModel.PolicyName))
+            {
+                myListSearch = await _context.PolicyTbls.Include(y=>y.PolicyType).Where(x => x.PolicyName.ToLower().Contains(searchViewModel.PolicyName.ToLower())).ToListAsync();  
+            }
 
-            var list = await _context.PolicyTbls.Include(x => x.PolicyType)
-                .Where(x => x.PolicyType.PolicyTypeName.ToLower().Contains(name.ToLower())).ToListAsync();
+            if(searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Any())
+            {
+                myListSearch = myListSearch.Where(x=>x.PolicyId == searchViewModel.PolicyId).ToList();
+            }
+            else if(searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Count() == 0)
+            {
+                myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyId == searchViewModel.PolicyId).ToListAsync();
+            }
+
+            if (searchViewModel.PolicyDuration > 0 && myListSearch != null && myListSearch.Any())
+            {
+                myListSearch = myListSearch.Where(x => x.PolicyDuration == searchViewModel.PolicyDuration).ToList();
+            }
+            else if (searchViewModel.PolicyDuration > 0 && myListSearch != null && myListSearch.Count() == 0)
+            {
+                myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyDuration == searchViewModel.PolicyDuration).ToListAsync();
+            }
+
+            if(!string.IsNullOrWhiteSpace(searchViewModel.PolicyCompany) && myListSearch.Any())
+            {
+                myListSearch = myListSearch.Where(x => x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())).ToList();
+            }
+            else if(searchViewModel.PolicyCompany != null && myListSearch.Count() == 0)
+            {
+                myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())).ToListAsync();
+            }
+
+            if (!string.IsNullOrEmpty(searchViewModel.PolicyTypeName) && myListSearch.Any())
+            {
+                myListSearch = myListSearch.Where(x => x.PolicyType.PolicyTypeName.ToLower().Contains(searchViewModel.PolicyTypeName.ToLower())).ToList();
+            }
+            else if (searchViewModel.PolicyTypeName != null && myListSearch.Count() == 0)
+            {
+                try
+                {
+                    myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType)
+                    .Where(x =>
+                      x.PolicyType.PolicyTypeName.ToLower().Contains(searchViewModel.PolicyTypeName.ToLower())
+                      ).ToListAsync();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.ToString());
+                }
+             }   
+
+               
+            var list = myListSearch;
             return Ok(list);
+
         }
 
         // PUT: api/Policy/5
