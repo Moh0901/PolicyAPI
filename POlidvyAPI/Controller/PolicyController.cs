@@ -69,13 +69,13 @@ namespace POlidvyAPI.Controller
                 myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyId == searchViewModel.PolicyId).ToListAsync();
             }
 
-            if (searchViewModel.PolicyDuration > 0 && myListSearch != null && myListSearch.Any())
+            if (searchViewModel.NumberOfYears > 0 && myListSearch != null && myListSearch.Any())
             {
-                myListSearch = myListSearch.Where(x => x.PolicyDuration == searchViewModel.PolicyDuration).ToList();
+                myListSearch = myListSearch.Where(x => x.PolicyDuration == searchViewModel.NumberOfYears).ToList();
             }
-            else if (searchViewModel.PolicyDuration > 0 && myListSearch != null && myListSearch.Count() == 0)
+            else if (searchViewModel.NumberOfYears > 0 && myListSearch != null && myListSearch.Count() == 0)
             {
-                myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyDuration == searchViewModel.PolicyDuration).ToListAsync();
+                myListSearch = await _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyDuration == searchViewModel.NumberOfYears).ToListAsync();
             }
 
             if (!string.IsNullOrWhiteSpace(searchViewModel.PolicyCompany) && myListSearch.Any())
@@ -106,10 +106,8 @@ namespace POlidvyAPI.Controller
                 }
             }
 
-
             var list = myListSearch;
             return Ok(list);
-
         }
 
         // PUT: api/Policy/5
