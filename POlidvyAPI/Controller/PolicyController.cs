@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using POlidvyAPI.Model.ViewModel;
 using POlidvyAPI.Model;
+using POlidvyAPI.Model.ViewModel;
 
 namespace POlidvyAPI.Controller
 {

@@ -1,8 +1,12 @@
-﻿namespace POlidvyAPI.Model
+﻿using Microsoft.Build.Framework;
+
+namespace POlidvyAPI.Model.ViewModel
 {
-    public partial class CustomerTbl
+    public class CustomerViewModel
     {
         public int CustomerId { get; set; }
+
+        [Required]
         public string? CustomerFirstName { get; set; }
         public string? CustomerLastName { get; set; }
         public DateTime? CustomerBirthDate { get; set; }
@@ -12,7 +16,5 @@
         public string? CustomerSalary { get; set; }
         public int? EmployerTypeId { get; set; }
         public string? EmployerName { get; set; }
-
-        public virtual EmployerTypeTbl? EmployerType { get; set; }
     }
 }
