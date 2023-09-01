@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace POlidvyAPI.Model
 {
@@ -13,6 +16,8 @@ namespace POlidvyAPI.Model
         {
         }
 
+        public virtual DbSet<CustomerTbl> CustomerTbls { get; set; } = null!;
+        public virtual DbSet<EmployerTypeTbl> EmployerTypeTbls { get; set; } = null!;
         public virtual DbSet<PolicyTbl> PolicyTbls { get; set; } = null!;
         public virtual DbSet<PolicyTypeTbl> PolicyTypeTbls { get; set; } = null!;
         public virtual DbSet<UserTypeTbl> UserTypeTbls { get; set; } = null!;
@@ -28,6 +33,77 @@ namespace POlidvyAPI.Model
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CustomerTbl>(entity =>
+            {
+                entity.HasKey(e => e.CustomerId);
+
+                entity.ToTable("Customer_tbl");
+
+                entity.Property(e => e.CustomerId).HasColumnName("Customer_Id");
+
+                entity.Property(e => e.CustomerAddress)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Customer_Address");
+
+                entity.Property(e => e.CustomerBirthDate)
+                    .HasColumnType("date")
+                    .HasColumnName("Customer_Birth_Date");
+
+                entity.Property(e => e.CustomerContactNo)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Customer_Contact_No");
+
+                entity.Property(e => e.CustomerEmail)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Customer_Email");
+
+                entity.Property(e => e.CustomerFirstName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Customer_First_Name");
+
+                entity.Property(e => e.CustomerLastName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Customer_Last_Name");
+
+                entity.Property(e => e.CustomerSalary)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Customer_Salary");
+
+                entity.Property(e => e.EmployerName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Employer_Name");
+
+                entity.Property(e => e.EmployerTypeId).HasColumnName("Employer_Type_Id");
+
+                entity.HasOne(d => d.EmployerType)
+                    .WithMany(p => p.CustomerTbls)
+                    .HasForeignKey(d => d.EmployerTypeId)
+                    .HasConstraintName("FK_Employer_Type_Id");
+            });
+
+            modelBuilder.Entity<EmployerTypeTbl>(entity =>
+            {
+                entity.HasKey(e => e.EmployerTypeId);
+
+                entity.ToTable("Employer_Type_tbl");
+
+                entity.Property(e => e.EmployerTypeId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("Employer_Type_Id");
+
+                entity.Property(e => e.EmployerTypeName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Employer_Type_Name");
+            });
+
             modelBuilder.Entity<PolicyTbl>(entity =>
             {
                 entity.HasKey(e => e.PolicyId)

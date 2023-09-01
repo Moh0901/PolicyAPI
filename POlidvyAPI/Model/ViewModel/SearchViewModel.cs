@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace POlidvyAPI.Model.ViewModel
+﻿namespace POlidvyAPI.Model.ViewModel
 {
     public class SearchViewModel
     {

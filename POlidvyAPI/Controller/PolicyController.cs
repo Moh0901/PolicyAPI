@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using POlidvyAPI.Model;
 using POlidvyAPI.Model.ViewModel;
-using System.Collections.Immutable;
+using POlidvyAPI.Model;
 
 namespace POlidvyAPI.Controller
 {
@@ -18,7 +18,7 @@ namespace POlidvyAPI.Controller
         }
 
         // GET: api/Policy
-        [HttpGet]
+        [HttpGet("/api/v1.0/policy/getall")]
         public async Task<ActionResult<IEnumerable<PolicyTbl>>> GetPolicyTbls()
         {
             if (_context.PolicyTbls == null)
@@ -30,25 +30,7 @@ namespace POlidvyAPI.Controller
             return Ok(policyList);
         }
 
-        /*        // GET: api/Policy/5
-                [HttpGet("{id}")]
-                public async Task<ActionResult<PolicyTbl>> GetPolicyTbl(int id)
-                {
-                    if (_context.PolicyTbls == null)
-                    {
-                        return NotFound();
-                    }
-                    var policyTbl = await _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).FirstOrDefaultAsync(z => z.PolicyId == id);
-
-                    if (policyTbl == null)
-                    {
-                        return NotFound();
-                    }
-
-                    return policyTbl;
-                }*/
-
-        [HttpGet("Search")]
+        [HttpGet("/api/v1.0/policy/searches")]
 
         public async Task<IActionResult> SearchPolicy([FromQuery] SearchViewModel searchViewModel)
         {
@@ -142,7 +124,7 @@ namespace POlidvyAPI.Controller
 
         // POST: api/Policy
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("/api/v1.0/policy/register")]
         public async Task<IActionResult> PostPolicyTbl(PolicyViewModel policyTbl)
         {
             PolicyTbl poilicy = new PolicyTbl();
@@ -292,3 +274,4 @@ namespace POlidvyAPI.Controller
         }
     }
 }
+

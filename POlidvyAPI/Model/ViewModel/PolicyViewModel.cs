@@ -18,6 +18,5 @@ namespace POlidvyAPI.Model.ViewModel
         public string PolicyTermsPerYear { get; set; } = null!;
         public string PolicyAmount { get; set; } = null!;
         public string PolicyInterest { get; set; } = null!;
-
     }
 }
