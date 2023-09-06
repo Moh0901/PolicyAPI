@@ -1,9 +1,15 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using POlidvyAPI.Model;
-
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddControllers()
+   .AddFluentValidation(c =>
+        c.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+   );
 // Add services to the container.
 
 builder.Services.AddControllers();
