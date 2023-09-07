@@ -24,7 +24,7 @@ namespace POlidvyAPI.Controllers
         {
             var result = _customerRepository.GetAllCsutomers();
 
-            if (result == null)
+            if (result == null && result.Count == 0)
             {
                 return NotFound();
             }

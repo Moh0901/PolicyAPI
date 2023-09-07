@@ -18,7 +18,7 @@ namespace POlidvyAPI.Controllers
             _loginRepository = loginRepository;
         }
 
-        [HttpPost]
+        [HttpPost("/api/v1.0/Login")]
 
         public IActionResult Login(LoginViewModel loginViewModel)
         {
