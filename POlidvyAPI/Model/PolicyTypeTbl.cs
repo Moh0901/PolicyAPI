@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace POlidvyAPI.Model
 {
@@ -10,8 +12,9 @@ namespace POlidvyAPI.Model
         }
 
         public int PolicyTypeId { get; set; }
-        public string PolicyTypeName { get; set; } = null!;
-        public string PolicyTypeCode { get; set; } = null!;
+        public string? PolicyTypeName { get; set; }
+        public string? PolicyTypeCode { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<PolicyTbl> PolicyTbls { get; set; }
     }

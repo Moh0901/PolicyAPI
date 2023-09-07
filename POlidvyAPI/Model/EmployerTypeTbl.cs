@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace POlidvyAPI.Model
 {
@@ -10,7 +12,7 @@ namespace POlidvyAPI.Model
         }
 
         public int EmployerTypeId { get; set; }
-        public string EmployerTypeName { get; set; } = null!;
+        public string? EmployerTypeName { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<CustomerTbl> CustomerTbls { get; set; }

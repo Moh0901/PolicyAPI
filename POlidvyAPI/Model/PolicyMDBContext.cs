@@ -1,14 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace POlidvyAPI.Model
 {
-    public partial class PolicyDBContext : DbContext
+    public partial class PolicyMDBContext : DbContext
     {
-        public PolicyDBContext()
+        public PolicyMDBContext()
         {
         }
 
-        public PolicyDBContext(DbContextOptions<PolicyDBContext> options)
+        public PolicyMDBContext(DbContextOptions<PolicyMDBContext> options)
             : base(options)
         {
         }
@@ -17,6 +20,7 @@ namespace POlidvyAPI.Model
         public virtual DbSet<EmployerTypeTbl> EmployerTypeTbls { get; set; } = null!;
         public virtual DbSet<PolicyTbl> PolicyTbls { get; set; } = null!;
         public virtual DbSet<PolicyTypeTbl> PolicyTypeTbls { get; set; } = null!;
+        public virtual DbSet<UserTbl> UserTbls { get; set; } = null!;
         public virtual DbSet<UserTypeTbl> UserTypeTbls { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -24,7 +28,7 @@ namespace POlidvyAPI.Model
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=LTIN403505\\SQLEXPRESS;Database=PolicyDB;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=LTIN403505\\SQLEXPRESS;Database=PolicyMDB;Trusted_Connection=True;");
             }
         }
 
@@ -67,9 +71,13 @@ namespace POlidvyAPI.Model
                     .IsUnicode(false)
                     .HasColumnName("Customer_Last_Name");
 
-                entity.Property(e => e.CustomerSalary)
+                entity.Property(e => e.CustomerPanNo)
                     .HasMaxLength(100)
                     .IsUnicode(false)
+                    .HasColumnName("Customer_Pan_No");
+
+                entity.Property(e => e.CustomerSalary)
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("Customer_Salary");
 
                 entity.Property(e => e.EmployerName)
@@ -82,7 +90,7 @@ namespace POlidvyAPI.Model
                 entity.HasOne(d => d.EmployerType)
                     .WithMany(p => p.CustomerTbls)
                     .HasForeignKey(d => d.EmployerTypeId)
-                    .HasConstraintName("FK_Employer_Type_Id");
+                    .HasConstraintName("FK_Employer_Type_tbl");
             });
 
             modelBuilder.Entity<EmployerTypeTbl>(entity =>
@@ -91,9 +99,7 @@ namespace POlidvyAPI.Model
 
                 entity.ToTable("Employer_Type_tbl");
 
-                entity.Property(e => e.EmployerTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("Employer_Type_Id");
+                entity.Property(e => e.EmployerTypeId).HasColumnName("Employer_Type_Id");
 
                 entity.Property(e => e.EmployerTypeName)
                     .HasMaxLength(100)
@@ -103,16 +109,14 @@ namespace POlidvyAPI.Model
 
             modelBuilder.Entity<PolicyTbl>(entity =>
             {
-                entity.HasKey(e => e.PolicyId)
-                    .HasName("PK_Policy_tbl_1");
+                entity.HasKey(e => e.PolicyId);
 
                 entity.ToTable("Policy_tbl");
 
                 entity.Property(e => e.PolicyId).HasColumnName("Policy_Id");
 
                 entity.Property(e => e.PolicyAmount)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("Policy_Amount");
 
                 entity.Property(e => e.PolicyCode)
@@ -128,13 +132,11 @@ namespace POlidvyAPI.Model
                 entity.Property(e => e.PolicyDuration).HasColumnName("Policy_Duration");
 
                 entity.Property(e => e.PolicyInitialDeposit)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("Policy_Initial_Deposit");
 
                 entity.Property(e => e.PolicyInterest)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
+                    .HasColumnType("decimal(5, 2)")
                     .HasColumnName("Policy_Interest");
 
                 entity.Property(e => e.PolicyName)
@@ -146,10 +148,7 @@ namespace POlidvyAPI.Model
                     .HasColumnType("date")
                     .HasColumnName("Policy_Start_Date");
 
-                entity.Property(e => e.PolicyTermsPerYear)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("Policy_Terms_Per_Year");
+                entity.Property(e => e.PolicyTermsPerYear).HasColumnName("Policy_Terms_Per_Year");
 
                 entity.Property(e => e.PolicyTypeId).HasColumnName("Policy_Type_Id");
 
@@ -158,13 +157,11 @@ namespace POlidvyAPI.Model
                 entity.HasOne(d => d.PolicyType)
                     .WithMany(p => p.PolicyTbls)
                     .HasForeignKey(d => d.PolicyTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Policy_Type_tbl");
 
                 entity.HasOne(d => d.UserType)
                     .WithMany(p => p.PolicyTbls)
                     .HasForeignKey(d => d.UserTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_User_Type_tbl");
             });
 
@@ -174,19 +171,38 @@ namespace POlidvyAPI.Model
 
                 entity.ToTable("Policy_Type_tbl");
 
-                entity.Property(e => e.PolicyTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("Policy_Type_Id");
+                entity.Property(e => e.PolicyTypeId).HasColumnName("Policy_Type_Id");
 
                 entity.Property(e => e.PolicyTypeCode)
-                    .HasMaxLength(50)
+                    .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Policy_Type_Code");
 
                 entity.Property(e => e.PolicyTypeName)
-                    .HasMaxLength(50)
+                    .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Policy_Type_Name");
+            });
+
+            modelBuilder.Entity<UserTbl>(entity =>
+            {
+                entity.ToTable("User_tbl");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Password)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Role)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Username)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<UserTypeTbl>(entity =>
@@ -195,14 +211,12 @@ namespace POlidvyAPI.Model
 
                 entity.ToTable("User_Type_tbl");
 
-                entity.Property(e => e.UserTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("User_Type_Id");
+                entity.Property(e => e.UserTypeId).HasColumnName("User_Type_Id");
 
-                entity.Property(e => e.UserIncome)
+                entity.Property(e => e.UserIncomePerYear)
                     .HasMaxLength(100)
                     .IsUnicode(false)
-                    .HasColumnName("User_Income");
+                    .HasColumnName("User_Income_Per_Year");
 
                 entity.Property(e => e.UserTypeName)
                     .HasMaxLength(100)

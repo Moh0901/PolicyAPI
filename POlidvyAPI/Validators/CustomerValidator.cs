@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using POlidvyAPI.Model.ViewModel;
+using POlidvyAPI.ViewModels;
 
 namespace POlidvyAPI.Validators
 {
@@ -16,10 +16,12 @@ namespace POlidvyAPI.Validators
                 .MaximumLength(10).WithMessage("{PropertyName} must have 10 digits.");
             RuleFor(customer => customer.CustomerEmail).NotNull().NotEmpty()
                 .EmailAddress();
-            RuleFor(customer => customer.CustomerSalary).NotNull().NotEmpty();
+            RuleFor(customer => customer.CustomerSalary).NotNull().NotEmpty()
+                .GreaterThanOrEqualTo(400000)
+                .WithMessage("{PropertyName} must be greater than 400000.");
             RuleFor(customer => customer.EmployerTypeId).NotNull().NotEmpty()
-                .InclusiveBetween(1,2).WithMessage("Empolyer Type Id must be 1 or 2.");
-            RuleFor(customer => customer.EmployerName).NotEmpty().Unless(c=>c.EmployerTypeId==2)
+                .InclusiveBetween(1, 2).WithMessage("{PropertyName} must be 1 or 2.");
+            RuleFor(customer => customer.EmployerName).NotEmpty().Unless(c => c.EmployerTypeId == 2)
                 .WithMessage("{PropertyName} is required when employer id is 1.");
         }
     }

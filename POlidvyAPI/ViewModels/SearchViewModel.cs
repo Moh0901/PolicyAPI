@@ -1,4 +1,4 @@
-﻿namespace POlidvyAPI.Model.ViewModel
+﻿namespace POlidvyAPI.ViewModels
 {
     public class SearchViewModel
     {

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace POlidvyAPI.Model
+﻿namespace POlidvyAPI.ViewModels
 {
-    public partial class PolicyTbl
+    public class PolicyViewModel
     {
         public int PolicyId { get; set; }
         public string? PolicyCode { get; set; }
@@ -18,9 +14,5 @@ namespace POlidvyAPI.Model
         public int? PolicyTermsPerYear { get; set; }
         public decimal? PolicyAmount { get; set; }
         public decimal? PolicyInterest { get; set; }
-
-        public virtual PolicyTypeTbl? PolicyType { get; set; }
-        [JsonIgnore]
-        public virtual UserTypeTbl? UserType { get; set; }
     }
 }
