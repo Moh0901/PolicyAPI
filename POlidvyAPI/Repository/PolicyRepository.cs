@@ -83,8 +83,8 @@ namespace POlidvyAPI.Repository
             request.EmailSubject = " Policy Registered Successfully";
             request.EmailBody = "<html><body> <p> Hi Admin, </p> " +
                  "<p> The policy is successfully registered. </p>" +
-                $"<p> The policy {poilicy.PolicyId} is available to the users from {poilicy.PolicyStartDate} to {endDate}. </p>" +
-                $"<p> This is the n<sup>th</sup> policy in the {poilicy.PolicyType.PolicyTypeName}. </p>" +
+                $"<p> The policy {PolicyCode} is available to the users from {poilicy.PolicyStartDate} to {endDate}. </p>" +
+                $"<p> This is the {poilicy.PolicyId}<sup>th</sup> policy in the {poilicy.PolicyType.PolicyTypeName}. </p>" +
                  "<p> To add more Click Policy Registration. </p>  </body></html>";
 
              emailService.SendEmail(request);
