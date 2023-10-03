@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using POlidvyAPI.Repository;
 using POlidvyAPI.ViewModels;
 
@@ -17,7 +15,7 @@ namespace POlidvyAPI.Controllers
             _customerRepository = customerRepository;
         }
 
-        
+
         [HttpGet("/api/v1.0/customer/getall")]
 
         public IActionResult GetCustomers()
@@ -39,7 +37,7 @@ namespace POlidvyAPI.Controllers
         {
             var result = _customerRepository.GetCustomerById(id);
 
-            if(result == null)
+            if (result == null)
             {
                 return NotFound($"Customer Not Found of {id}.");
             }
@@ -51,7 +49,7 @@ namespace POlidvyAPI.Controllers
 
         public IActionResult PostCustomer(CustomerViewModel customerViewModel)
         {
-            if(customerViewModel == null)
+            if (customerViewModel == null)
             {
                 return NotFound("New Customer Not Added.");
             }

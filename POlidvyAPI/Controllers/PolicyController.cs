@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using POlidvyAPI.Repository;
 using POlidvyAPI.ViewModels;
-using System.Collections.Generic;
-using System.Data;
 
 namespace POlidvyAPI.Controllers
 {
@@ -18,7 +15,7 @@ namespace POlidvyAPI.Controllers
         {
             _policyRepository = policyRepository;
         }
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         [HttpGet("/api/v1.0/policy/getall")]
         public IActionResult GetPolicies()
         {
@@ -31,15 +28,30 @@ namespace POlidvyAPI.Controllers
 
             return Ok(result);
         }
-        [Authorize(Roles = "User")]
+
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet("/api/v1.0/policy/getById/{id}")]
+
+        public IActionResult GetPolicyById(int id)
+        {
+            var result = _policyRepository.GetPolicyById(id);
+
+            if (result == null)
+            {
+                return NotFound($"Policy Not Found of {id}.");
+            }
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "User,Admin")]
         [HttpGet("/api/v1.0/policy/searches")]
 
         public IActionResult SearchPolicy([FromQuery] SearchViewModel searchViewModel)
         {
-            if(string.IsNullOrWhiteSpace(searchViewModel.PolicyTypeName) 
-                && !searchViewModel.NumberOfYears.HasValue 
-                && string.IsNullOrWhiteSpace(searchViewModel.PolicyCompany) 
-                && !searchViewModel.PolicyId.HasValue 
+            if (string.IsNullOrWhiteSpace(searchViewModel.PolicyTypeName)
+                && !searchViewModel.NumberOfYears.HasValue
+                && string.IsNullOrWhiteSpace(searchViewModel.PolicyCompany)
+                && !searchViewModel.PolicyId.HasValue
                 && string.IsNullOrWhiteSpace(searchViewModel.PolicyName))
             {
                 return BadRequest("At least one search criteria is required");
@@ -49,6 +61,7 @@ namespace POlidvyAPI.Controllers
 
             return Ok(result);
         }
+
         [Authorize(Roles = "Admin")]
         [HttpPost("/api/v1.0/policy/register")]
 

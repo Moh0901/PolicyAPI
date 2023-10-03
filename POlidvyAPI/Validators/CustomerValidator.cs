@@ -3,7 +3,7 @@ using POlidvyAPI.ViewModels;
 
 namespace POlidvyAPI.Validators
 {
-    public class CustomerValidator: AbstractValidator<CustomerViewModel>
+     public class CustomerValidator : AbstractValidator<CustomerViewModel>
     {
         public CustomerValidator()
         {
@@ -11,7 +11,7 @@ namespace POlidvyAPI.Validators
             RuleFor(customer => customer.CustomerLastName).NotNull().NotEmpty();
             RuleFor(customer => customer.CustomerAddress).NotNull().NotEmpty();
             RuleFor(customer => customer.CustomerBirthDate).NotNull().NotEmpty()
-                .LessThan(customer => DateTime.Today);
+                .LessThan(customer => DateTime.UtcNow);
             RuleFor(customer => customer.CustomerContactNo).NotNull().NotEmpty().MinimumLength(10)
                 .MaximumLength(10).WithMessage("{PropertyName} must have 10 digits.");
             RuleFor(customer => customer.CustomerEmail).NotNull().NotEmpty()

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace POlidvyAPI.Model
+﻿namespace POlidvyAPI.Model
 {
     public partial class CustomerTbl
     {
@@ -17,7 +14,7 @@ namespace POlidvyAPI.Model
         public int? EmployerTypeId { get; set; }
         public string? EmployerName { get; set; }
 
-        
+
         public virtual EmployerTypeTbl? EmployerType { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using POlidvyAPI.Repository;
 using POlidvyAPI.ViewModels;
 
@@ -24,12 +23,13 @@ namespace POlidvyAPI.Controllers
         {
             var result = _loginRepository.Authenticate(loginViewModel);
 
-            if(result == null)
+            if (result == null)
             {
                 return BadRequest("Username or Password is incorrect.");
             }
 
-            return Ok(_tokenHandler.CreateToken(result));
+            var token = _tokenHandler.CreateToken(result);
+            return Ok(token);
         }
     }
 }

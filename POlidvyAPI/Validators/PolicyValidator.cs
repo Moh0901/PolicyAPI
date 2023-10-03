@@ -3,7 +3,7 @@ using POlidvyAPI.ViewModels;
 
 namespace POlidvyAPI.Validators
 {
-    public class PolicyValidator: AbstractValidator<PolicyViewModel>
+    public class PolicyValidator : AbstractValidator<PolicyViewModel>
     {
         public PolicyValidator()
         {
@@ -28,8 +28,6 @@ namespace POlidvyAPI.Validators
             RuleFor(policy => policy.PolicyAmount).NotNull().NotEmpty()
                 .WithMessage("{PropertyName} cannot be empty.");
             RuleFor(policy => policy.PolicyTermsPerYear).NotNull().NotEmpty().GreaterThan(0)
-                .WithMessage("{PropertyName} cannnot be empty and zero.");
-            RuleFor(policy => policy.PolicyInterest).NotNull().NotEmpty().GreaterThan(0)
                 .WithMessage("{PropertyName} cannnot be empty and zero.");
 
         }

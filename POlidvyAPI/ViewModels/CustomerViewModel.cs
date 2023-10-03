@@ -4,7 +4,7 @@ namespace POlidvyAPI.ViewModels
 {
     public class CustomerViewModel
     {
-        
+
         [Required]
         public string? CustomerFirstName { get; set; }
         public string? CustomerLastName { get; set; }

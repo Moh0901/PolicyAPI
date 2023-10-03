@@ -7,8 +7,8 @@ namespace POlidvyAPI.Repository
     {
         List<CustomerTbl> GetAllCsutomers();
 
-        CustomerTbl GetCustomerById(int id);   
-        
+        CustomerTbl GetCustomerById(int id);
+
         CustomerTbl AddNewCustomers(CustomerViewModel customerViewModel);
     }
 }

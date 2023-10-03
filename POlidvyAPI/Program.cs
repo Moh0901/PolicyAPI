@@ -18,15 +18,17 @@ builder.Services.AddControllers()
    .AddFluentValidation(c =>
         c.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly())
    );
+
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();  
+builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
 builder.Services.AddScoped<ITokenHandler, POlidvyAPI.Repository.TokenHandler>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+/*Service for Email*/
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -40,6 +42,13 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+
+//services cors
+builder.Services.AddCors(p => p.AddPolicy("AllowOrigin", builder =>
+{
+    builder.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+}));
+//database service
 builder.Services.AddDbContext<PolicyMDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseContext")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -62,6 +71,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowOrigin");
 
 app.UseHttpsRedirection();
 

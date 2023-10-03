@@ -6,7 +6,7 @@ using System.Text;
 
 namespace POlidvyAPI.Repository
 {
-    public class TokenHandler: ITokenHandler
+    public class TokenHandler : ITokenHandler
     {
         private readonly IConfiguration _configuration;
 
@@ -22,6 +22,7 @@ namespace POlidvyAPI.Repository
             {
                 new Claim(ClaimTypes.Name , user.Name),
                 new Claim(ClaimTypes.Role , user.Role),
+                new Claim("role", user.Role)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

@@ -18,7 +18,7 @@ namespace POlidvyAPI.Repository
 
         public PolicyTbl AddNewPolicy(PolicyViewModel policyTbl)
         {
-           PolicyTbl poilicy = new PolicyTbl();
+            PolicyTbl poilicy = new PolicyTbl();
 
             poilicy.PolicyId = policyTbl.PolicyId;
             poilicy.PolicyName = policyTbl.PolicyName;
@@ -35,7 +35,7 @@ namespace POlidvyAPI.Repository
 
             _context.PolicyTbls.Add(poilicy);
 
-              _context.SaveChanges();
+            _context.SaveChanges();
 
             /*To get Policy Type Code*/
             string typeCode = getPolicyTypeShortCode(poilicy.PolicyTypeId);
@@ -48,11 +48,11 @@ namespace POlidvyAPI.Repository
 
             _context.PolicyTbls.Update(poilicy);
 
-             _context.SaveChangesAsync();
+            _context.SaveChangesAsync();
 
             /*To get Maturity Amount*/
 
-            var maturityAmount =  getMaturityAmount(policyTbl);
+            var maturityAmount = getMaturityAmount(policyTbl);
 
 
             Console.WriteLine("--------------------Maturity Amount--------------------------");
@@ -63,7 +63,7 @@ namespace POlidvyAPI.Repository
             //_context.PolicyTbls.Update(PolicyTbl);
 
             /*To get End Date of policy*/
-            var endDate =  getEndDate(policyTbl);
+            var endDate = getEndDate(policyTbl);
             Console.WriteLine("--------------------End Date--------------------------");
             Console.WriteLine(endDate);
             Console.WriteLine("----------------------------------------------");
@@ -79,7 +79,7 @@ namespace POlidvyAPI.Repository
              Console.WriteLine("-------------------------------------------");*/
 
             EmailViewModel request = new EmailViewModel();
-            request.ToEmailId = "mohitverma.540.mv@gmail.com";
+            request.ToEmailId = "csecec.1802115@gmail.com";
             request.EmailSubject = " Policy Registered Successfully";
             request.EmailBody = "<html><body> <p> Hi Admin, </p> " +
                  "<p> The policy is successfully registered. </p>" +
@@ -87,14 +87,14 @@ namespace POlidvyAPI.Repository
                 $"<p> This is the {poilicy.PolicyId}<sup>th</sup> policy in the {poilicy.PolicyType.PolicyTypeName}. </p>" +
                  "<p> To add more Click Policy Registration. </p>  </body></html>";
 
-             emailService.SendEmail(request);
+            emailService.SendEmail(request);
 
             return poilicy;
         }
 
         public List<PolicyTbl> GetAllPolicies()
         {
-            var policyList =  _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).ToList();
+            var policyList = _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).ToList();
 
             return policyList;
         }
@@ -106,7 +106,7 @@ namespace POlidvyAPI.Repository
 
             if (!string.IsNullOrWhiteSpace(searchViewModel.PolicyName))
             {
-                myListSearch =  _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyName.ToLower().Contains(searchViewModel.PolicyName.ToLower())).ToList();
+                myListSearch = _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyName.ToLower().Contains(searchViewModel.PolicyName.ToLower())).ToList();
             }
 
             if (searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Any())
@@ -115,7 +115,7 @@ namespace POlidvyAPI.Repository
             }
             else if (searchViewModel.PolicyId > 0 && myListSearch != null && myListSearch.Count() == 0)
             {
-                myListSearch =  _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyId == searchViewModel.PolicyId).ToList();
+                myListSearch = _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyId == searchViewModel.PolicyId).ToList();
             }
 
             if (searchViewModel.NumberOfYears > 0 && myListSearch != null && myListSearch.Any())
@@ -124,7 +124,7 @@ namespace POlidvyAPI.Repository
             }
             else if (searchViewModel.NumberOfYears > 0 && myListSearch != null && myListSearch.Count() == 0)
             {
-                myListSearch =  _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyDuration == searchViewModel.NumberOfYears).ToList();
+                myListSearch = _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyDuration == searchViewModel.NumberOfYears).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(searchViewModel.PolicyCompany) && myListSearch.Any())
@@ -133,7 +133,7 @@ namespace POlidvyAPI.Repository
             }
             else if (searchViewModel.PolicyCompany != null && myListSearch.Count() == 0)
             {
-                myListSearch =  _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())).ToList();
+                myListSearch = _context.PolicyTbls.Include(y => y.PolicyType).Where(x => x.PolicyCompany.ToLower().Contains(searchViewModel.PolicyCompany.ToLower())).ToList();
             }
 
             if (!string.IsNullOrEmpty(searchViewModel.PolicyTypeName) && myListSearch.Any())
@@ -142,10 +142,10 @@ namespace POlidvyAPI.Repository
             }
             else if (searchViewModel.PolicyTypeName != null && myListSearch.Count() == 0)
             {
-                
-               myListSearch = _context.PolicyTbls.Include(y => y.PolicyType).Where(x =>
-                                x.PolicyType.PolicyTypeName.ToLower().Contains(searchViewModel.PolicyTypeName.ToLower())
-                               ).ToList();
+
+                myListSearch = _context.PolicyTbls.Include(y => y.PolicyType).Where(x =>
+                                 x.PolicyType.PolicyTypeName.ToLower().Contains(searchViewModel.PolicyTypeName.ToLower())
+                                ).ToList();
             }
 
             var list = myListSearch;
@@ -179,7 +179,7 @@ namespace POlidvyAPI.Repository
 
         private string getPolicyTypeShortCode(int? typeId)
         {
-            var PolicyType =  _context.PolicyTypeTbls.FirstOrDefault(e => e.PolicyTypeId == typeId);
+            var PolicyType = _context.PolicyTypeTbls.FirstOrDefault(e => e.PolicyTypeId == typeId);
 
             return PolicyType.PolicyTypeCode;
         }
@@ -196,8 +196,14 @@ namespace POlidvyAPI.Repository
             Console.WriteLine($"({policyViewModel.PolicyInitialDeposit}) +  ({policyViewModel.PolicyDuration} * {policyViewModel.PolicyTermsPerYear} * {policyViewModel.PolicyAmount})  + (({policyViewModel.PolicyDuration} * {policyViewModel.PolicyTermsPerYear} * {policyViewModel.PolicyAmount}) * ({policyViewModel.PolicyInterest} /100))");
             Console.WriteLine("-------------------------------------------");
 
-            return MaturityAmount; 
+            return MaturityAmount;
         }
 
+        public PolicyTbl GetPolicyById(int id)
+        {
+            var policy = _context.PolicyTbls.Include(x => x.PolicyType).Include(y => y.UserType).FirstOrDefault(z =>z.PolicyId == id);
+
+            return policy;
+        }
     }
 }

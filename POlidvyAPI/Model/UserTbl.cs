@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace POlidvyAPI.Model
+﻿namespace POlidvyAPI.Model
 {
     public partial class UserTbl
     {

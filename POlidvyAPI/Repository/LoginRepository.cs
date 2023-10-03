@@ -3,7 +3,7 @@ using POlidvyAPI.ViewModels;
 
 namespace POlidvyAPI.Repository
 {
-    public class LoginRepository: ILoginRepository
+    public class LoginRepository : ILoginRepository
     {
         private readonly PolicyMDBContext _context;
         public LoginRepository(PolicyMDBContext context)
@@ -21,6 +21,6 @@ namespace POlidvyAPI.Repository
             }
             return loggedUser;
         }
-   
+
     }
 }
